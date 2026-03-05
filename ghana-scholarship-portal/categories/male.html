@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${cat.title} | Ghana Scholarship Portal</title>
+    <!-- Fonts && Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="../index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> GSP<span>.</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="../index.html" class="nav-link">Home</a>
+                <div class="dropdown">
+                    <a href="#" class="nav-link dropdown-toggle active">Categories <i class="fas fa-chevron-down" style="font-size: 0.8em; margin-left: 5px;"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="public.html" class="dropdown-item ">Public Univ.</a>
+                        <a href="private.html" class="dropdown-item ">Private Univ.</a>
+                        <a href="mentorship.html" class="dropdown-item ">Mentorship</a>
+                        <a href="male.html" class="dropdown-item active">Male Scholarships</a>
+                        <a href="female.html" class="dropdown-item ">Female Scholarships</a>
+                        <a href="mixed.html" class="dropdown-item ">Mixed Scholarships</a>
+                        <a href="international.html" class="dropdown-item ">International Students</a>
+                    </div>
+                </div>
+                <a href="../about.html" class="nav-link">About Us</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="search-wrapper">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="global-search" class="search-input" placeholder="Search scholarships...">
+                    </div>
+                    <!-- Search Results Dropdown -->
+                    <div id="search-results" class="search-results-dropdown"></div>
+                </div>
+
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-btn" aria-label="Open mobile menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="detail-header">
+            <div class="container text-center reveal">
+                <div class="category-icon" style="margin: 0 auto 1.5rem; background: rgba(255,255,255,0.1); color: #fff; width: 80px; height: 80px; font-size: 2rem;"><i class="fas ${cat.icon}"></i></div>
+                <h1 style="font-size: 3rem; margin-bottom: 1rem;">${cat.title}</h1>
+                <p style="font-size: 1.25rem; max-width: 600px; margin: 0 auto;">${cat.desc}</p>
+            </div>
+        </section>
+
+        <section style="padding: 5rem 0;">
+            <div class="container">
+                <div class="text-center reveal mb-5" style="margin-bottom: 3rem;">
+                    <h2 class="section-title">Available Opportunities</h2>
+                </div>
+                
+                <!-- Notice: Edit the HTML structure directly below for each scholarship entry -->
+                <div class="scholarship-grid">
+
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 1                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-open">Open</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>1. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 2                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-open">Open</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>2. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 3                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-open">Open</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>3. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 4                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-open">Open</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>4. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 5                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-passed">Deadline Passed</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>5. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 6                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-passed">Deadline Passed</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>6. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 7                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-closed">Closed</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>7. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 8                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-closed">Closed</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>8. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 9                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-not-open">Not Open Yet</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>9. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                    <!-- ============================================== -->
+                    <!-- SCHOLARSHIP ENTRY 10                             -->
+                    <!-- ============================================== -->
+                    <div class="scholarship-entry reveal">
+                        <!-- 6. Indicator (Classes: status-open, status-closed, status-passed, status-not-open) -->
+                        <span class="status-badge status-not-open">Not Open Yet</span>
+                        
+                        <!-- 1. Scholarship name -->
+                        <h2>10. GHANA EDUCATION TRUST FUND (GETFund) - Placeholder</h2>
+                        
+                        <img src="https://pbs.twimg.com/profile_images/1389845110205071365/msROYi9R_400x400.jpg" width="150" height="150" alt="Sponsor Logo">
+                        
+                        <!-- 2. Short Description -->
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                            As it implies, this is a fund dedicated to brilliant but needy students in Ghanaian Tertiary institutions. (Lorem ipsum dolor sit amet).
+                        </p>
+                        
+                        <!-- 3. Eligibility Criteria -->
+                        <h4>Eligibility Criteria:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 1.5rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Must be a Ghanaian citizen</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color:var(--secondary-color); margin-right: 0.5rem;"></i> Minimum CGPA of 3.0</li>
+                        </ul>
+
+                        <!-- 4. Requirements -->
+                        <h4>Requirements for Applicants:</h4>
+                        <ul style="color: var(--text-color); margin-bottom: 2rem; padding-left: 1.25rem; font-size: 0.9rem;" class="list-unstyled">
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Signed application letter</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Admission letter clearly stating the programme's duration</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Approved fee schedule e.g. 2024/2025 academic year</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Secondary School certificate (WASSCE, CTVET...)</li>
+                            <li style="margin-bottom: 0.5rem;"><i class="fas fa-file-alt" style="color:var(--primary-color); margin-right: 0.5rem;"></i> Previous academic term transcript</li>
+                        </ul>
+
+                        <!-- 5. Link placeholder -->
+                        <p style="margin-top: auto;"><a href="https://scholarships.getfund.gov.gh/" target="_blank" class="btn btn-primary">Click here to apply</a></p>
+                    </div>
+        
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <i class="fas fa-graduation-cap"></i> GSP<span>.</span>
+                    </a>
+                    <p>Committed to democratizing access to higher education in Ghana through transparent scholarship listings.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="../about.html">About Us</a></li>
+                        <li><a href="mentorship.html">Mentorship</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <form id="footer-contact-form" class="contact-form">
+                        <div class="form-group">
+                            <input type="email" name="email" class="form-control" placeholder="Quick Message Email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%; border-radius: var(--border-radius-sm)">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/data-placeholders.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/animations.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/contact.js"></script>
+</body>
+</html>

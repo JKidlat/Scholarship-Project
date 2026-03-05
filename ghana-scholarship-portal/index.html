@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghana Scholarship Portal | Discover Funding Opportunities</title>
+    <meta name="description"
+        content="Discover and apply for scholarships across Ghana. Explore opportunities for male, female, public, private and international students.">
+    <!-- Fonts && Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> GSP<span>.</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link active">Home</a>
+                <div class="dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">Categories <i class="fas fa-chevron-down"
+                            style="font-size: 0.8em; margin-left: 5px;"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="categories/public.html" class="dropdown-item">Public Univ.</a>
+                        <a href="categories/private.html" class="dropdown-item">Private Univ.</a>
+                        <a href="categories/mentorship.html" class="dropdown-item">Mentorship</a>
+                        <a href="categories/male.html" class="dropdown-item">Male Scholarships</a>
+                        <a href="categories/female.html" class="dropdown-item">Female Scholarships</a>
+                        <a href="categories/mixed.html" class="dropdown-item">Mixed Scholarships</a>
+                        <a href="categories/international.html" class="dropdown-item">International Students</a>
+                    </div>
+                </div>
+                <a href="about.html" class="nav-link">About Us</a>
+
+            </nav>
+
+            <div class="header-actions">
+                <!-- Global Search -->
+                <div class="search-wrapper">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="global-search" class="search-input" placeholder="Search scholarships...">
+                    </div>
+                    <!-- Search Results Dropdown -->
+                    <div id="search-results" class="search-results-dropdown"></div>
+                </div>
+
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-btn" aria-label="Open mobile menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-content">
+                <div class="hero-text reveal">
+                    <h1>Unlock Your<br><span>Future</span> in Ghana</h1>
+                    <p>The premier destination for discovering fully-funded scholarships, grants, and financial aid for
+                        Ghanaian students and international scholars.</p>
+
+                    <div class="hero-buttons">
+                        <a href="#explore" class="btn btn-primary">Explore Scholarships</a>
+                        <a href="about.html" class="btn btn-outline">Learn More</a>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <h3>60+</h3>
+                            <p>Active Scholarships</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>6</h3>
+                            <p>Major Categories</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>100%</h3>
+                            <p>Free to Apply</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-image reveal" style="transition-delay: 0.2s">
+                    <div class="hero-image-inner">
+                        <div class="hero-shape hero-shape-1"></div>
+                        <div class="hero-shape hero-shape-2"></div>
+                        <div
+                            style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2">
+                            <i class="fas fa-user-graduate" style="font-size: 8rem; color: #ffffff; opacity: 0.9;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="explore" style="background-color: var(--bg-light)">
+            <div class="container">
+                <div class="text-center reveal">
+                    <h2 class="section-title">Browse by Category</h2>
+                    <p class="section-subtitle">Find the exact funding opportunity tailored to your demographic,
+                        institution, or background.</p>
+                </div>
+
+                <div class="category-preview-grid">
+                    <a href="categories/male.html" class="category-tile reveal" style="transition-delay: 0.1s">
+                        <div class="category-icon"><i class="fas fa-male"></i></div>
+                        <h3>Male Scholarships</h3>
+                    </a>
+                    <a href="categories/female.html" class="category-tile reveal" style="transition-delay: 0.2s">
+                        <div class="category-icon"><i class="fas fa-female"></i></div>
+                        <h3>Female Scholarships</h3>
+                    </a>
+                    <a href="categories/mixed.html" class="category-tile reveal" style="transition-delay: 0.3s">
+                        <div class="category-icon"><i class="fas fa-users"></i></div>
+                        <h3>Mixed Scholarships</h3>
+                    </a>
+                    <a href="categories/international.html" class="category-tile reveal" style="transition-delay: 0.4s">
+                        <div class="category-icon"><i class="fas fa-globe-africa"></i></div>
+                        <h3>International Students</h3>
+                    </a>
+                    <a href="categories/private.html" class="category-tile reveal" style="transition-delay: 0.5s">
+                        <div class="category-icon"><i class="fas fa-building"></i></div>
+                        <h3>Private Universities</h3>
+                    </a>
+                    <a href="categories/public.html" class="category-tile reveal" style="transition-delay: 0.6s">
+                        <div class="category-icon"><i class="fas fa-university"></i></div>
+                        <h3>Public Universities</h3>
+                    </a>
+                    <a href="categories/mentorship.html" class="category-tile reveal" style="transition-delay: 0.7s">
+                        <div class="category-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h3>Mentorship</h3>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Scholarships Section -->
+        <section>
+            <div class="container">
+                <div class="text-center reveal">
+                    <h2 class="section-title">Featured Opportunities</h2>
+                    <p class="section-subtitle">The most popular and recently added scholarships currently open for
+                        applications.</p>
+                </div>
+
+                <!-- JS Will Populate this grid based on data-limit -->
+                <div id="scholarship-grid" class="scholarship-grid" data-limit="6">
+                    <!-- Skeletons while JS loads -->
+                    <div class="scholarship-card" style="min-height: 250px; background: var(--bg-light)"></div>
+                    <div class="scholarship-card" style="min-height: 250px; background: var(--bg-light)"></div>
+                    <div class="scholarship-card" style="min-height: 250px; background: var(--bg-light)"></div>
+                </div>
+
+                <div class="text-center reveal" style="margin-top: 3rem;">
+                    <a href="categories/public.html" class="btn btn-outline"
+                        style="font-size: 1.1rem; padding: 1rem 2rem;">
+                        View All Scholarships <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand reveal">
+                    <a href="index.html" class="logo">
+                        <i class="fas fa-graduation-cap"></i> GSP<span>.</span>
+                    </a>
+                    <p>Committed to democratizing access to higher education in Ghana through transparent scholarship
+                        listings.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" title="Facebook placeholder"><i
+                                class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link" title="Twitter placeholder"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" title="LinkedIn placeholder"><i
+                                class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links reveal" style="transition-delay: 0.1s">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="categories/female.html">Women in STEM</a></li>
+                        <li><a href="categories/male.html">Male Scholar Grants</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-contact reveal" style="transition-delay: 0.2s">
+                    <h4>Contact Us</h4>
+                    <form id="footer-contact-form" class="contact-form">
+                        <div class="form-group">
+                            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="message" class="form-control" placeholder="How can we help?"
+                                required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; border-radius: var(--border-radius-sm)">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                &copy; <span id="year">2026</span> Ghana Scholarship Portal. All rights reserved.
+                <script>document.getElementById('year').innerText = new Date().getFullYear();</script>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- MUST load data-placeholders first -->
+    <script src="js/data-placeholders.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+
+</html>

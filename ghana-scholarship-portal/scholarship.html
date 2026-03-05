@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholarship Details | Ghana Scholarship Portal</title>
+    <!-- Fonts && Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .detail-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background-color: var(--bg-light);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-meta-item h5 {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-meta-item p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        .list-unstyled {
+            list-style: none;
+            padding: 0;
+        }
+
+        .list-unstyled li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            font-size: 1.05rem;
+        }
+
+        .list-unstyled li i {
+            margin-top: 5px;
+        }
+
+        .detail-section {
+            margin-bottom: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header & Navigation -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-graduation-cap"></i> GSP<span>.</span>
+            </a>
+
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <div class="dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">Categories <i class="fas fa-chevron-down"
+                            style="font-size: 0.8em; margin-left: 5px;"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="categories/public.html" class="dropdown-item">Public Univ.</a>
+                        <a href="categories/private.html" class="dropdown-item">Private Univ.</a>
+                        <a href="categories/mentorship.html" class="dropdown-item">Mentorship</a>
+                        <a href="categories/male.html" class="dropdown-item">Male Scholarships</a>
+                        <a href="categories/female.html" class="dropdown-item">Female Scholarships</a>
+                        <a href="categories/mixed.html" class="dropdown-item">Mixed Scholarships</a>
+                        <a href="categories/international.html" class="dropdown-item">International Students</a>
+                    </div>
+                </div>
+                <a href="about.html" class="nav-link">About Us</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="search-wrapper">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="global-search" class="search-input" placeholder="Search scholarships...">
+                    </div>
+                    <!-- Search Results Dropdown -->
+                    <div id="search-results" class="search-results-dropdown"></div>
+                </div>
+
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-btn" aria-label="Open mobile menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="detail-header">
+            <div class="container text-center reveal">
+                <div class="card-category-dot"
+                    style="justify-content: center; color: var(--secondary-color); font-size: 1rem" id="det-category">
+                    LOADING...</div>
+                <h1 id="det-title"
+                    style="font-size: 3rem; margin-bottom: 1rem; max-width: 900px; margin-left: auto; margin-right: auto;">
+                    Loading Scholarship Details...</h1>
+            </div>
+        </section>
+
+        <section style="padding: 2rem 0 5rem;">
+            <div class="container" id="scholarship-detail">
+                <!-- Javascript will inject data into these elements -->
+                <div class="detail-content reveal">
+                    <div class="detail-meta-grid">
+                        <div class="detail-meta-item">
+                            <h5><i class="far fa-clock"></i> Deadline</h5>
+                            <p id="det-deadline">Loading...</p>
+                        </div>
+                        <div class="detail-meta-item">
+                            <h5><i class="fas fa-tags"></i> Funding Type</h5>
+                            <p id="det-type">Loading...</p>
+                        </div>
+                        <div class="detail-meta-item">
+                            <h5><i class="fas fa-university"></i> Education Level</h5>
+                            <p id="det-level">Loading...</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3 style="color: var(--primary-color)">Overview</h3>
+                        <p id="det-desc" style="font-size: 1.1rem; color: var(--text-color); line-height: 1.8;">
+                            Loading description...
+                        </p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3 style="color: var(--primary-color)">Eligibility Criteria</h3>
+                        <ul id="det-elig" class="list-unstyled" style="color: var(--text-color)">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3 style="color: var(--primary-color)">Application Requirements</h3>
+                        <ul id="det-reqs" class="list-unstyled" style="color: var(--text-color)">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 4rem; text-align: center;">
+                        <a href="#" id="det-apply-btn" class="btn btn-primary"
+                            style="font-size: 1.25rem; padding: 1rem 3rem;">
+                            Apply Now <i class="fas fa-external-link-alt ml-2"></i>
+                        </a>
+                        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                            You will be redirected to the official scholarship application portal.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <i class="fas fa-graduation-cap"></i> GSP<span>.</span>
+                    </a>
+                    <p>Committed to democratizing access to higher education in Ghana through transparent scholarship
+                        listings.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <!-- Mini footer contact to save space -->
+                <div class="footer-contact">
+                    <h4>Contact Us</h4>
+                    <form id="footer-contact-form" class="contact-form">
+                        <div class="form-group">
+                            <input type="email" name="email" class="form-control" placeholder="Quick Message Email"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary"
+                            style="width: 100%; border-radius: var(--border-radius-sm)">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/data-placeholders.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/contact.js"></script>
+</body>
+
+</html>
