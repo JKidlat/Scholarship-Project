@@ -1,12 +1,12 @@
 const fs = require('fs');
 
 const categories = [
-    { id: 'male', title: 'Male Scholarships', icon: 'fa-male', desc: 'Discover dedicated funding opportunities empowering young men to achieve academic excellence.' },
     { id: 'female', title: 'Female Scholarships', icon: 'fa-female', desc: 'Explore scholarships breaking barriers for Ghanaian women pursuing higher education.' },
-    { id: 'mixed', title: 'Mixed Scholarships', icon: 'fa-users', desc: 'Browse merit-based open scholarships for all high-achieving Ghanaian students.' },
+    { id: 'general', title: 'General Scholarships', icon: 'fa-users', desc: 'Browse merit-based open scholarships for all high-achieving Ghanaian students.' },
     { id: 'international', title: 'International Students', icon: 'fa-globe-africa', desc: 'Find support tailored for international students contributing to cultural diversity in Ghana.' },
     { id: 'private', title: 'Private University Scholarships', icon: 'fa-building', desc: 'Access financial assistance for students attending accredited private universities.' },
     { id: 'public', title: 'Public University Scholarships', icon: 'fa-university', desc: 'View funding options recognizing outstanding academic performance in public tertiary institutions.' },
+    { id: 'postgraduate', title: 'Postgraduate Scholarships', icon: 'fa-graduation-cap', desc: "Find funding for master's and doctoral degrees in various disciplines." },
     { id: 'mentorship', title: 'Mentorship Opportunities', icon: 'fa-lightbulb', desc: 'Connect with industry leaders and academic experts to guide your career and educational journey.' }
 ];
 
@@ -98,10 +98,10 @@ const template = (cat) => `<!DOCTYPE html>
                     <div class="dropdown-menu">
                         <a href="public.html" class="dropdown-item ${cat.id === 'public' ? 'active' : ''}">Public Univ.</a>
                         <a href="private.html" class="dropdown-item ${cat.id === 'private' ? 'active' : ''}">Private Univ.</a>
+                        <a href="postgraduate.html" class="dropdown-item ${cat.id === 'postgraduate' ? 'active' : ''}">Postgraduate Scholarships</a>
                         <a href="mentorship.html" class="dropdown-item ${cat.id === 'mentorship' ? 'active' : ''}">Mentorship</a>
-                        <a href="male.html" class="dropdown-item ${cat.id === 'male' ? 'active' : ''}">Male Scholarships</a>
                         <a href="female.html" class="dropdown-item ${cat.id === 'female' ? 'active' : ''}">Female Scholarships</a>
-                        <a href="mixed.html" class="dropdown-item ${cat.id === 'mixed' ? 'active' : ''}">Mixed Scholarships</a>
+                        <a href="general.html" class="dropdown-item ${cat.id === 'general' ? 'active' : ''}">General Scholarships</a>
                         <a href="international.html" class="dropdown-item ${cat.id === 'international' ? 'active' : ''}">International Students</a>
                     </div>
                 </div>
@@ -184,7 +184,6 @@ const template = (cat) => `<!DOCTYPE html>
     </footer>
 
     <!-- Scripts -->
-    <script src="../js/data-placeholders.js"></script>
     <script src="../js/main.js"></script>
     <script src="../js/animations.js"></script>
     <script src="../js/search.js"></script>
