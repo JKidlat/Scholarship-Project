@@ -90,3 +90,23 @@ BEGIN
     ON CONFLICT (user_id) DO UPDATE SET role = 'super_admin';
   END IF;
 END $$;
+
+-- Also ensure future signup with this email automatically receives super_admin role
+CREATE OR REPLACE FUNCTION handle_admin_user_signup()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF LOWER(TRIM(COALESCE(NEW.email, ''))) = 'jansah.klintaps@gmail.com' THEN
+    INSERT INTO admin_users (user_id, role)
+    VALUES (NEW.id, 'super_admin')
+    ON CONFLICT (user_id) DO UPDATE SET role = 'super_admin';
+  ELSIF TG_OP = 'UPDATE' AND LOWER(TRIM(COALESCE(OLD.email, ''))) = 'jansah.klintaps@gmail.com' THEN
+    DELETE FROM admin_users WHERE user_id = NEW.id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_admin_user_created ON auth.users;
+CREATE TRIGGER on_admin_user_created
+  AFTER INSERT OR UPDATE ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION handle_admin_user_signup();

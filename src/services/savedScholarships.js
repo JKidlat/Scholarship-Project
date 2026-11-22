@@ -123,28 +123,51 @@ export async function getSavedScholarships(userOrId) {
           created_at,
           scholarship:scholarships (
             id,
+            name,
             title,
             slug,
-            provider,
+            application_url,
             host_country,
             funding_type,
             geographic_scope,
+            scope,
             study_levels,
             application_deadline,
-            official_url,
-            status,
+            deadline,
             application_status,
-            logo_url
+            status,
+            logo_url,
+            short_description,
+            provider:scholarship_providers(id, name, logo_url),
+            institution:institutions(id, name)
           )
         `)
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
       if (!error && Array.isArray(data) && data.length > 0) {
-        return data.map((d) => ({
-          ...d,
-          scholarship: d.scholarship || d,
-        }));
+        return data.map((d) => {
+          const s = d.scholarship || {};
+          const providerObj = s.provider && typeof s.provider === 'object' ? s.provider : null;
+          const institutionObj = s.institution && typeof s.institution === 'object' ? s.institution : null;
+          return {
+            ...d,
+            scholarship: {
+              ...s,
+              provider: providerObj ? providerObj.name : (s.provider || ''),
+              institution: institutionObj ? institutionObj.name : (s.institution || ''),
+              title: s.title || s.name || '',
+              name: s.name || s.title || '',
+              official_url: s.official_url || s.application_url || null,
+              application_url: s.application_url || s.official_url || null,
+              status: s.status || (s.application_status ? String(s.application_status) : ''),
+              application_status: s.application_status || s.status || '',
+              scope: s.scope || (s.geographic_scope ? String(s.geographic_scope) : ''),
+              deadline: s.deadline || s.application_deadline || null,
+              application_deadline: s.application_deadline || s.deadline || null,
+            },
+          };
+        });
       }
     } catch (err) {
       console.warn('Supabase getSavedScholarships fallback to database store:', err);

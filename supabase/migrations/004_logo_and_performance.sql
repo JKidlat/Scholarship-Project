@@ -8,7 +8,8 @@ ALTER TABLE scholarships
   ADD COLUMN IF NOT EXISTS logo_url TEXT,
   ADD COLUMN IF NOT EXISTS logo_storage_path TEXT,
   ADD COLUMN IF NOT EXISTS logo_alt_text TEXT,
-  ADD COLUMN IF NOT EXISTS logo_updated_at TIMESTAMPTZ DEFAULT NOW();
+  ADD COLUMN IF NOT EXISTS logo_updated_at TIMESTAMPTZ DEFAULT NOW(),
+  ADD COLUMN IF NOT EXISTS deadline_text TEXT;
 
 -- 2. Add Composite Performance Indexes for High-Traffic Filtering
 CREATE INDEX IF NOT EXISTS idx_scholarships_pub_created 
@@ -43,23 +44,27 @@ ON CONFLICT (id) DO UPDATE SET
 
 -- 4. Storage Security Policies
 -- Public read access: Anyone can view scholarship provider logos
+DROP POLICY IF EXISTS "Public Access: View scholarship logos" ON storage.objects;
 CREATE POLICY "Public Access: View scholarship logos" 
   ON storage.objects FOR SELECT 
   USING (bucket_id = 'scholarship-logos');
 
 -- Admin write access: Authenticated admins can upload logos
+DROP POLICY IF EXISTS "Admin Access: Upload scholarship logos" ON storage.objects;
 CREATE POLICY "Admin Access: Upload scholarship logos" 
   ON storage.objects FOR INSERT 
   TO authenticated 
   WITH CHECK (bucket_id = 'scholarship-logos');
 
 -- Admin update access: Authenticated admins can update/replace logos
+DROP POLICY IF EXISTS "Admin Access: Update scholarship logos" ON storage.objects;
 CREATE POLICY "Admin Access: Update scholarship logos" 
   ON storage.objects FOR UPDATE 
   TO authenticated 
   USING (bucket_id = 'scholarship-logos');
 
 -- Admin delete access: Authenticated admins can delete logos
+DROP POLICY IF EXISTS "Admin Access: Delete scholarship logos" ON storage.objects;
 CREATE POLICY "Admin Access: Delete scholarship logos" 
   ON storage.objects FOR DELETE 
   TO authenticated 

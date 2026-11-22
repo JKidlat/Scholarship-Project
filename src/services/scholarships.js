@@ -42,13 +42,14 @@ export function invalidateScholarshipCache() {
 /**
  * Selective columns for card/directory views — avoids transferring huge description/audit payloads
  */
+// Selective columns for card/directory views.
+// Joins provider and institution via foreign-key relations for PostgREST compatibility.
+// Compatibility columns (title, status, scope, deadline, is_verified) are added by migration 009.
 export const CARD_SELECT_FIELDS = [
   'id',
   'slug',
-  'title',
   'name',
-  'provider',
-  'institution',
+  'title',
   'institution_category',
   'application_status',
   'status',
@@ -69,7 +70,61 @@ export const CARD_SELECT_FIELDS = [
   'short_description',
   'is_published',
   'created_at',
+  'provider:scholarship_providers(id, name, logo_url)',
+  'institution:institutions(id, name)',
 ].join(', ');
+
+/**
+ * Normalize a raw Supabase DB row into the flat shape expected by all components.
+ * Maps relational FK objects to their string values and aligns canonical ↔ compat column names.
+ * @param {object} row - Raw row returned from PostgREST
+ * @returns {object} Normalized scholarship record
+ */
+export function normalizeScholarshipRecord(row) {
+  if (!row) return row;
+
+  // Resolve provider: may be a joined object { id, name, logo_url } or already a string
+  const providerObj = row.provider && typeof row.provider === 'object' ? row.provider : null;
+  const providerName = providerObj ? (providerObj.name || '') : (row.provider || '');
+  const providerLogoUrl = providerObj ? (providerObj.logo_url || null) : null;
+
+  // Resolve institution: may be a joined object { id, name } or already a string
+  const institutionObj = row.institution && typeof row.institution === 'object' ? row.institution : null;
+  const institutionName = institutionObj ? (institutionObj.name || '') : (row.institution || '');
+
+  // Normalize study_levels: in DB it's a text[] or joined table rows; in seed it's an array
+  let studyLevels = row.study_levels;
+  if (Array.isArray(studyLevels) && studyLevels.length > 0 && typeof studyLevels[0] === 'object') {
+    // Joined scholarship_study_levels rows — not used in CARD_SELECT_FIELDS but guard anyway
+    studyLevels = studyLevels.map((r) => r.level || r);
+  }
+
+  return {
+    ...row,
+    // Flat provider and institution strings for all components
+    provider: providerName,
+    provider_id: providerObj ? providerObj.id : (row.provider_id || null),
+    provider_logo_url: providerLogoUrl || row.logo_url || null,
+    institution: institutionName,
+    institution_id: institutionObj ? institutionObj.id : (row.institution_id || null),
+    // Canonical ↔ compat alignment
+    title: row.title || row.name || '',
+    name: row.name || row.title || '',
+    status: row.status || (row.application_status ? String(row.application_status) : ''),
+    application_status: row.application_status || row.status || '',
+    scope: row.scope || (row.geographic_scope ? String(row.geographic_scope) : ''),
+    geographic_scope: row.geographic_scope || row.scope || '',
+    deadline: row.deadline || row.application_deadline || null,
+    application_deadline: row.application_deadline || row.deadline || null,
+    // URL aliases
+    official_url: row.official_url || row.application_url || null,
+    application_url: row.application_url || row.official_url || null,
+    // Study levels
+    study_levels: studyLevels || [],
+    // Description aliases
+    description: row.description || row.short_description || row.full_description || '',
+  };
+}
 
 const DELETED_KEYS_KEY = 'gh_scholarships_deleted_ids';
 
@@ -273,8 +328,9 @@ export async function getPublishedScholarships(limit = 300) {
         .limit(limit);
 
       if (!error && data && data.length > 0) {
-        setInCache(cacheKey, data);
-        return data;
+        const normalized = data.map(normalizeScholarshipRecord);
+        setInCache(cacheKey, normalized);
+        return normalized;
       }
     } catch (err) {
       // fallback
@@ -309,8 +365,9 @@ export async function getFeaturedOpenScholarships(limit = 6) {
         .limit(limit);
 
       if (!error && data && data.length > 0) {
-        setInCache(cacheKey, data);
-        return data;
+        const normalized = data.map(normalizeScholarshipRecord);
+        setInCache(cacheKey, normalized);
+        return normalized;
       }
     } catch (err) {
       // fallback to local
@@ -445,10 +502,10 @@ export async function getFilteredScholarships({
         q = q.in('funding_type', fundingTypes);
       }
 
-      // Keyword Search
+      // Keyword Search — use canonical columns that exist as flat text on the scholarships table
       if (query && query.trim()) {
         const term = query.trim();
-        q = q.or(`title.ilike.%${term}%,provider.ilike.%${term}%,institution.ilike.%${term}%`);
+        q = q.or(`name.ilike.%${term}%,title.ilike.%${term}%,short_description.ilike.%${term}%`);
       }
 
       // Sorting
@@ -464,7 +521,7 @@ export async function getFilteredScholarships({
 
       if (!error && data && data.length > 0) {
         const result = {
-          data,
+          data: data.map(normalizeScholarshipRecord),
           total: count || data.length,
           page,
           pageSize,
@@ -602,19 +659,22 @@ export async function getScholarshipBySlug(slug) {
   const cached = getFromCache(cacheKey);
   if (cached) return cached;
 
-  try {
-    const { data, error } = await supabase
-      .from('scholarships')
-      .select('*')
-      .or(`slug.eq.${slug},id.eq.${slug}`)
-      .single();
+  if (isSupabaseConfigured()) {
+    try {
+      const { data, error } = await supabase
+        .from('scholarships')
+        .select('*')
+        .or(`slug.eq.${slug},id.eq.${slug}`)
+        .maybeSingle();
 
-    if (!error && data) {
-      setInCache(cacheKey, data);
-      return data;
+      if (!error && data) {
+        const normalized = normalizeScholarshipRecord(data);
+        setInCache(cacheKey, normalized);
+        return normalized;
+      }
+    } catch (err) {
+      // fallback
     }
-  } catch (err) {
-    // fallback
   }
 
   const local = getLocalStore();
@@ -637,19 +697,22 @@ export async function getScholarshipById(id) {
   if (cached) return cached;
 
   // Try Supabase: match by id OR by slug
-  try {
-    const { data, error } = await supabase
-      .from('scholarships')
-      .select('*')
-      .or(`id.eq.${id},slug.eq.${id}`)
-      .maybeSingle();
+  if (isSupabaseConfigured()) {
+    try {
+      const { data, error } = await supabase
+        .from('scholarships')
+        .select('*')
+        .or(`id.eq.${id},slug.eq.${id}`)
+        .maybeSingle();
 
-    if (!error && data) {
-      setInCache(cacheKey, data);
-      return data;
+      if (!error && data) {
+        const normalized = normalizeScholarshipRecord(data);
+        setInCache(cacheKey, normalized);
+        return normalized;
+      }
+    } catch (err) {
+      // fall through to local store
     }
-  } catch (err) {
-    // fall through to local store
   }
 
   // Local store fallback
@@ -747,25 +810,23 @@ export async function updateScholarship(targetIdOrSlug, fields) {
 
   // 2. Prepare database-compliant Supabase payload (only matching existing columns)
   const supabasePayload = {
-    title: fields.title || fields.name,
     name: fields.title || fields.name,
-    provider: fields.provider,
-    institution: fields.institution || null,
+    title: fields.title || fields.name,
     institution_category: fields.institution_category || 'other',
     geographic_scope: fields.geographic_scope || fields.scope || 'local',
+    scope: fields.geographic_scope || fields.scope || 'local',
     funding_type: fields.funding_type || 'other',
     gender_eligibility: fields.gender_eligibility || 'all',
     application_status: fields.application_status || fields.status || 'open',
+    status: fields.application_status || fields.status || 'open',
     verification_status: fields.verification_status || (fields.is_verified ? 'verified' : 'needs_verification'),
     is_verified: !!fields.is_verified,
     is_featured: !!fields.is_featured,
     is_published: fields.is_published !== false,
-    official_url: fields.official_url || fields.application_url || null,
     application_url: fields.official_url || fields.application_url || null,
     information_url: fields.information_url || null,
-    description: fields.description || fields.full_description || null,
     short_description: fields.short_description || (fields.description ? fields.description.substring(0, 160) : null),
-    full_description: fields.description || null,
+    full_description: fields.description || fields.full_description || null,
     eligibility_requirements: Array.isArray(fields.eligibility_criteria)
       ? fields.eligibility_criteria.join('\n')
       : (fields.eligibility_requirements || fields.eligibility_criteria || null),

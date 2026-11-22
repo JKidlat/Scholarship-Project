@@ -219,25 +219,50 @@ export async function getTrackedApplications(userOrId) {
           updated_at,
           scholarship:scholarships (
             id,
+            name,
             title,
             slug,
-            provider,
-            official_url,
+            application_url,
             application_deadline,
+            deadline,
             funding_type,
             host_country,
             geographic_scope,
-            logo_url
+            scope,
+            application_status,
+            status,
+            logo_url,
+            short_description,
+            provider:scholarship_providers(id, name, logo_url),
+            institution:institutions(id, name)
           )
         `)
         .eq('user_id', userId)
         .order('updated_at', { ascending: false });
 
       if (!error && Array.isArray(data) && data.length > 0) {
-        return data.map((d) => ({
-          ...d,
-          scholarship: d.scholarship || d,
-        }));
+        return data.map((d) => {
+          const s = d.scholarship || {};
+          const providerObj = s.provider && typeof s.provider === 'object' ? s.provider : null;
+          const institutionObj = s.institution && typeof s.institution === 'object' ? s.institution : null;
+          return {
+            ...d,
+            scholarship: {
+              ...s,
+              provider: providerObj ? providerObj.name : (s.provider || ''),
+              institution: institutionObj ? institutionObj.name : (s.institution || ''),
+              title: s.title || s.name || '',
+              name: s.name || s.title || '',
+              official_url: s.official_url || s.application_url || null,
+              application_url: s.application_url || s.official_url || null,
+              status: s.status || (s.application_status ? String(s.application_status) : ''),
+              application_status: s.application_status || s.status || '',
+              scope: s.scope || (s.geographic_scope ? String(s.geographic_scope) : ''),
+              deadline: s.deadline || s.application_deadline || null,
+              application_deadline: s.application_deadline || s.deadline || null,
+            },
+          };
+        });
       }
     } catch (err) {
       console.warn('Supabase getTrackedApplications fallback to database store:', err);

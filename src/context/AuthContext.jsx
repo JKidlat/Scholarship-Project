@@ -48,10 +48,21 @@ export function AuthProvider({ children }) {
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user) {
             setUser(session.user);
+            // Try to load full profile from Supabase student_profiles table
+            let supabaseProfile = null;
+            try {
+              const { data: profileData } = await supabase
+                .from('student_profiles')
+                .select('*')
+                .eq('user_id', session.user.id)
+                .maybeSingle();
+              supabaseProfile = profileData;
+            } catch {}
             const storedProfiles = getStoredStudentProfiles();
             const matched = storedProfiles.find((p) => p.user_id === session.user.id || p.email === session.user.email);
-            setProfile(matched || {
+            setProfile(supabaseProfile || matched || {
               id: session.user.id,
+              user_id: session.user.id,
               email: session.user.email,
               full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
               current_level: session.user.user_metadata?.current_level || 'undergraduate',
@@ -95,17 +106,31 @@ export function AuthProvider({ children }) {
     // Listen for Supabase auth state changes if configured
     let subscription = null;
     if (isSupabaseConfigured()) {
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
         if (session?.user) {
           setUser(session.user);
+          // Load profile from Supabase student_profiles, fall back to localStorage
+          let supabaseProfile = null;
+          try {
+            const { data: profileData } = await supabase
+              .from('student_profiles')
+              .select('*')
+              .eq('user_id', session.user.id)
+              .maybeSingle();
+            supabaseProfile = profileData;
+          } catch {}
           const storedProfiles = getStoredStudentProfiles();
           const matched = storedProfiles.find((p) => p.user_id === session.user.id || p.email === session.user.email);
-          setProfile(matched || {
+          setProfile(supabaseProfile || matched || {
             id: session.user.id,
+            user_id: session.user.id,
             email: session.user.email,
             full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
             current_level: session.user.user_metadata?.current_level || 'undergraduate',
           });
+        } else {
+          setUser(null);
+          setProfile(null);
         }
       });
       subscription = data?.subscription;

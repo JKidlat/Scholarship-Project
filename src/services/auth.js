@@ -489,6 +489,21 @@ export async function registerUser({ email, password, fullName, level = 'undergr
       });
       if (error) throw error;
       supabaseUser = data?.user;
+
+      // Upsert student profile in Supabase on successful signup
+      if (supabaseUser?.id) {
+        try {
+          await supabase.from('student_profiles').upsert({
+            user_id: supabaseUser.id,
+            full_name: fullName.trim(),
+            current_level: level,
+            nationality: 'Ghanaian',
+            country_of_residence: 'Ghana',
+          }, { onConflict: 'user_id' });
+        } catch (profileErr) {
+          console.warn('Student profile upsert notice:', profileErr.message);
+        }
+      }
     } catch (err) {
       console.warn('Supabase auth sign up warning:', err.message);
     }
@@ -579,10 +594,22 @@ export async function loginUser({ email, password }) {
       });
 
       if (!error && data?.user) {
+        // Load full profile from student_profiles table if Supabase is configured
+        let supabaseProfile = null;
+        try {
+          const { data: profileData } = await supabase
+            .from('student_profiles')
+            .select('*')
+            .eq('user_id', data.user.id)
+            .maybeSingle();
+          supabaseProfile = profileData;
+        } catch {}
+
         const session = {
           user: data.user,
-          profile: {
+          profile: supabaseProfile || {
             id: data.user.id,
+            user_id: data.user.id,
             email: data.user.email,
             full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
             current_level: data.user.user_metadata?.current_level || 'undergraduate',
