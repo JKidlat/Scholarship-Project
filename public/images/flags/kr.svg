@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <rect width="900" height="600" fill="#FFFFFF"/>
+  <!-- Taegeuk -->
+  <g transform="translate(450, 300) rotate(-33.69)">
+    <!-- Red top half -->
+    <path d="M-120,0 A120,120 0 0,1 120,0 A60,60 0 0,1 0,0 A60,60 0 0,0 -120,0 Z" fill="#CD2E3A"/>
+    <!-- Blue bottom half -->
+    <path d="M-120,0 A120,120 0 0,0 120,0 A60,60 0 0,0 0,0 A60,60 0 0,1 -120,0 Z" fill="#0047A0"/>
+  </g>
+  <!-- Trigrams -->
+  <!-- Geon (Top Left) -->
+  <g transform="translate(225, 150) rotate(33.69)" fill="#000000">
+    <rect x="-45" y="-30" width="90" height="12"/>
+    <rect x="-45" y="-6" width="90" height="12"/>
+    <rect x="-45" y="18" width="90" height="12"/>
+  </g>
+  <!-- Ri (Bottom Left) -->
+  <g transform="translate(225, 450) rotate(-33.69)" fill="#000000">
+    <rect x="-45" y="-30" width="90" height="12"/>
+    <rect x="-45" y="-6" width="40" height="12"/>
+    <rect x="5" y="-6" width="40" height="12"/>
+    <rect x="-45" y="18" width="90" height="12"/>
+  </g>
+  <!-- Gam (Top Right) -->
+  <g transform="translate(675, 150) rotate(-33.69)" fill="#000000">
+    <rect x="-45" y="-30" width="40" height="12"/>
+    <rect x="5" y="-30" width="40" height="12"/>
+    <rect x="-45" y="-6" width="90" height="12"/>
+    <rect x="-45" y="18" width="40" height="12"/>
+    <rect x="5" y="18" width="40" height="12"/>
+  </g>
+  <!-- Gon (Bottom Right) -->
+  <g transform="translate(675, 450) rotate(33.69)" fill="#000000">
+    <rect x="-45" y="-30" width="40" height="12"/>
+    <rect x="5" y="-30" width="40" height="12"/>
+    <rect x="-45" y="-6" width="40" height="12"/>
+    <rect x="5" y="-6" width="40" height="12"/>
+    <rect x="-45" y="18" width="40" height="12"/>
+    <rect x="5" y="18" width="40" height="12"/>
+  </g>
+</svg>

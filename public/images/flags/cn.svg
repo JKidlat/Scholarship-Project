@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <rect width="900" height="600" fill="#DE2910"/>
+  <!-- Big star -->
+  <polygon points="150,55 178,141 269,141 195,195 223,281 150,227 77,281 105,195 31,141 122,141" fill="#FFDE00"/>
+  <!-- 4 small stars -->
+  <polygon points="300,50 307,67 325,67 310,78 316,95 300,84 284,95 290,78 275,67 293,67" transform="rotate(-36.87 300 70)" fill="#FFDE00"/>
+  <polygon points="360,110 367,127 385,127 370,138 376,155 360,144 344,155 350,138 335,127 353,127" transform="rotate(-18.43 360 130)" fill="#FFDE00"/>
+  <polygon points="360,200 367,217 385,217 370,228 376,245 360,234 344,245 350,228 335,217 353,217" transform="rotate(0 360 220)" fill="#FFDE00"/>
+  <polygon points="300,260 307,277 325,277 310,288 316,305 300,294 284,305 290,288 275,277 293,277" transform="rotate(18.43 300 280)" fill="#FFDE00"/>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <rect width="1280" height="640" fill="#00008B"/>
+  <!-- Union Jack in Canton -->
+  <svg width="640" height="320" viewBox="0 0 60 30">
+    <clipPath id="as">
+      <path d="M0,0 v30 h60 v-30 z"/>
+    </clipPath>
+    <clipPath id="at">
+      <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/>
+    </clipPath>
+    <g clip-path="url(#as)">
+      <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+      <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#at)" stroke="#C8102E" stroke-width="4"/>
+      <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+      <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+    </g>
+  </svg>
+  <!-- Commonwealth Star (7 points) -->
+  <g fill="#FFFFFF" transform="translate(320, 480)">
+    <polygon points="0,-60 14.5,-23.4 52.8,-37.2 30.5,-3.8 59.8,13.4 21.6,20.8 28.9,59 0,33.4 -28.9,59 -21.6,20.8 -59.8,13.4 -30.5,-3.8 -52.8,-37.2 -14.5,-23.4"/>
+  </g>
+  <!-- Southern Cross Stars -->
+  <g fill="#FFFFFF">
+    <!-- Alpha Crucis -->
+    <g transform="translate(960, 520) scale(0.65)">
+      <polygon points="0,-60 14.5,-23.4 52.8,-37.2 30.5,-3.8 59.8,13.4 21.6,20.8 28.9,59 0,33.4 -28.9,59 -21.6,20.8 -59.8,13.4 -30.5,-3.8 -52.8,-37.2 -14.5,-23.4"/>
+    </g>
+    <!-- Beta Crucis -->
+    <g transform="translate(800, 280) scale(0.65)">
+      <polygon points="0,-60 14.5,-23.4 52.8,-37.2 30.5,-3.8 59.8,13.4 21.6,20.8 28.9,59 0,33.4 -28.9,59 -21.6,20.8 -59.8,13.4 -30.5,-3.8 -52.8,-37.2 -14.5,-23.4"/>
+    </g>
+    <!-- Gamma Crucis -->
+    <g transform="translate(960, 120) scale(0.65)">
+      <polygon points="0,-60 14.5,-23.4 52.8,-37.2 30.5,-3.8 59.8,13.4 21.6,20.8 28.9,59 0,33.4 -28.9,59 -21.6,20.8 -59.8,13.4 -30.5,-3.8 -52.8,-37.2 -14.5,-23.4"/>
+    </g>
+    <!-- Delta Crucis -->
+    <g transform="translate(1096, 240) scale(0.65)">
+      <polygon points="0,-60 14.5,-23.4 52.8,-37.2 30.5,-3.8 59.8,13.4 21.6,20.8 28.9,59 0,33.4 -28.9,59 -21.6,20.8 -59.8,13.4 -30.5,-3.8 -52.8,-37.2 -14.5,-23.4"/>
+    </g>
+    <!-- Epsilon Crucis (5 points) -->
+    <g transform="translate(1024, 360) scale(0.4)">
+      <polygon points="0,-50 14.7,-15.4 50,-15.4 21.3,7.3 32.4,45 0,22.5 -32.4,45 -21.3,7.3 -50,-15.4 -14.7,-15.4"/>
+    </g>
+  </g>
+</svg>

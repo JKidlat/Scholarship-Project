@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7410 3900" width="741" height="390">
+  <rect width="7410" height="3900" fill="#B22234"/>
+  <path d="M0,450H7410M0,1050H7410M0,1650H7410M0,2250H7410M0,2850H7410M0,3450H7410" stroke="#FFF" stroke-width="300"/>
+  <rect width="2964" height="2100" fill="#3C3B6E"/>
+  <g fill="#FFF">
+    <g id="s1">
+      <g id="s2">
+        <polygon id="s" points="247,90 286,211 413,211 310,286 349,407 247,332 144,407 184,286 81,211 208,211"/>
+        <use href="#s" y="350"/>
+        <use href="#s" y="700"/>
+        <use href="#s" y="1050"/>
+        <use href="#s" y="1400"/>
+      </g>
+      <use href="#s2" y="175" x="247"/>
+    </g>
+    <use href="#s1" x="494"/>
+    <use href="#s1" x="988"/>
+    <use href="#s1" x="1482"/>
+    <use href="#s1" x="1976"/>
+    <use href="#s2" x="2470"/>
+  </g>
+</svg>
