@@ -1,0 +1,38 @@
+{
+  "name": "ghana-scholarship-portal-backend",
+  "version": "1.0.0",
+  "description": "Ghana Scholarship Portal — Express backend API",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "validate": "node --check src/server.js src/app.js src/config/env.js src/config/supabase.js src/controllers/health.controller.js src/routes/health.routes.js src/middleware/errorHandler.js src/middleware/notFound.js src/middleware/requestLogger.js src/utils/AppError.js src/utils/asyncHandler.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "js,json",
+    "ignore": [
+      "src/**/*.test.js"
+    ],
+    "delay": "500"
+  }
+}
