@@ -44,35 +44,31 @@ export function invalidateScholarshipCache() {
  * Selective columns for card/directory views — avoids transferring huge description/audit payloads
  */
 // Selective columns for card/directory views.
-// Joins provider and institution via foreign-key relations for PostgREST compatibility.
-// Compatibility columns (title, status, scope, deadline, is_verified) are added by migration 009.
+// Uses only canonical columns from initial schema and relational foreign-key joins.
 export const CARD_SELECT_FIELDS = [
   'id',
   'slug',
   'name',
-  'title',
-  'institution_category',
-  'application_status',
-  'status',
-  'funding_type',
-  'study_levels',
+  'short_description',
+  'full_description',
   'geographic_scope',
-  'scope',
-  'application_deadline',
-  'deadline',
-  'deadline_text',
+  'funding_type',
+  'application_status',
   'gender_eligibility',
-  'is_featured',
-  'is_verified',
   'verification_status',
+  'is_featured',
+  'is_published',
+  'application_deadline',
+  'application_url',
+  'information_url',
   'logo_url',
   'logo_storage_path',
   'logo_alt_text',
-  'short_description',
-  'is_published',
   'created_at',
+  'updated_at',
   'provider:scholarship_providers(id, name, logo_url)',
-  'institution:institutions(id, name)',
+  'institution:institutions(id, name, category)',
+  'study_levels:scholarship_study_levels(level)',
 ].join(', ');
 
 /**
@@ -108,6 +104,7 @@ export function normalizeScholarshipRecord(row) {
     provider_logo_url: providerLogoUrl || row.logo_url || null,
     institution: institutionName,
     institution_id: institutionObj ? institutionObj.id : (row.institution_id || null),
+    institution_category: row.institution_category || (institutionObj && institutionObj.category) || row.institution_category_restriction || 'public_university',
     // Canonical ↔ compat alignment
     title: row.title || row.name || '',
     name: row.name || row.title || '',
@@ -117,6 +114,7 @@ export function normalizeScholarshipRecord(row) {
     geographic_scope: row.geographic_scope || row.scope || '',
     deadline: row.deadline || row.application_deadline || null,
     application_deadline: row.application_deadline || row.deadline || null,
+    is_verified: row.is_verified !== undefined ? !!row.is_verified : (row.verification_status === 'verified'),
     // URL aliases
     official_url: row.official_url || row.application_url || null,
     application_url: row.application_url || row.official_url || null,
@@ -290,6 +288,23 @@ export async function getAllScholarships() {
   const cached = getFromCache(cacheKey);
   if (cached) return cached;
 
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/scholarships?all=true&limit=500`, { cache: 'no-store' });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.data)) {
+          const normalized = body.data.map(normalizeScholarshipRecord);
+          setInCache(cacheKey, normalized);
+          return normalized;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend getAllScholarships notice:', e.message);
+    }
+  }
+
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase
@@ -298,8 +313,9 @@ export async function getAllScholarships() {
         .order('created_at', { ascending: false });
 
       if (!error && data && data.length > 0) {
-        setInCache(cacheKey, data);
-        return data;
+        const normalized = data.map(normalizeScholarshipRecord);
+        setInCache(cacheKey, normalized);
+        return normalized;
       }
     } catch (err) {
       // fallback to local store
@@ -318,6 +334,23 @@ export async function getPublishedScholarships(limit = 300) {
   const cacheKey = `published_limit_${limit}`;
   const cached = getFromCache(cacheKey);
   if (cached) return cached;
+
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/scholarships?all=false&limit=${limit}`, { cache: 'no-store' });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.data)) {
+          const normalized = body.data.map(normalizeScholarshipRecord);
+          setInCache(cacheKey, normalized);
+          return normalized;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend getPublishedScholarships notice:', e.message);
+    }
+  }
 
   if (isSupabaseConfigured()) {
     try {
@@ -354,6 +387,23 @@ export async function getFeaturedOpenScholarships(limit = 6) {
   const cacheKey = `featured_open_limit_${limit}`;
   const cached = getFromCache(cacheKey);
   if (cached) return cached;
+
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/scholarships?all=false&featured=true&status=open&limit=${limit}`, { cache: 'no-store' });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.data)) {
+          const normalized = body.data.map(normalizeScholarshipRecord);
+          setInCache(cacheKey, normalized);
+          return normalized;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend getFeaturedOpenScholarships notice:', e.message);
+    }
+  }
 
   if (isSupabaseConfigured()) {
     try {
@@ -469,75 +519,44 @@ export async function getFilteredScholarships({
   if (cached) return cached;
 
   const start = (page - 1) * pageSize;
-  const end = start + pageSize - 1;
 
-  // Try Supabase server-side query first if configured
-  if (isSupabaseConfigured()) {
+  // 1. Fetch live published records from Backend API (single source of truth)
+  let sourceRecords = null;
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
     try {
-      let q = supabase
-        .from('scholarships')
-        .select(CARD_SELECT_FIELDS, { count: 'exact' })
-        .eq('is_published', true);
-
-      // Geographic Scope
-      if (scope && scope !== 'all') {
-        if (scope === 'local') {
-          q = q.in('geographic_scope', ['local', 'both']);
-        } else if (scope === 'international') {
-          q = q.in('geographic_scope', ['international', 'both']);
+      const res = await fetch(`${apiBase}/api/scholarships?all=false&limit=500`, { cache: 'no-store' });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.data) && body.data.length > 0) {
+          sourceRecords = body.data.map(normalizeScholarshipRecord);
         }
       }
-
-      // Gender Eligibility
-      if (gender && gender !== 'all') {
-        q = q.eq('gender_eligibility', gender);
-      }
-
-      // Application Status
-      if (status && status.length > 0) {
-        q = q.in('application_status', status);
-      }
-
-      // Funding Types
-      if (fundingTypes && fundingTypes.length > 0) {
-        q = q.in('funding_type', fundingTypes);
-      }
-
-      // Keyword Search — use canonical columns that exist as flat text on the scholarships table
-      if (query && query.trim()) {
-        const term = query.trim();
-        q = q.or(`name.ilike.%${term}%,title.ilike.%${term}%,short_description.ilike.%${term}%`);
-      }
-
-      // Sorting
-      if (sort === 'deadline') {
-        q = q.order('application_deadline', { ascending: true, nullsFirst: false });
-      } else {
-        q = q.order('created_at', { ascending: false });
-      }
-
-      q = q.range(start, end);
-
-      const { data, count, error } = await q;
-
-      if (!error && data && data.length > 0) {
-        const result = {
-          data: data.map(normalizeScholarshipRecord),
-          total: count || data.length,
-          page,
-          pageSize,
-          totalPages: Math.ceil((count || data.length) / pageSize),
-        };
-        setInCache(cacheKey, result);
-        return result;
-      }
-    } catch (err) {
-      // fallback to local filter
+    } catch (e) {
+      console.warn('Backend getFilteredScholarships fallback:', e.message);
     }
   }
 
-  // Resilient Local Filter Fallback
-  const all = getLocalStore().filter((s) => s.is_published !== false);
+  // 2. Direct Supabase query fallback using safe canonical columns
+  if (!sourceRecords && isSupabaseConfigured()) {
+    try {
+      const { data, error } = await supabase
+        .from('scholarships')
+        .select(CARD_SELECT_FIELDS)
+        .eq('is_published', true)
+        .order('created_at', { ascending: false })
+        .limit(500);
+
+      if (!error && data && data.length > 0) {
+        sourceRecords = data.map(normalizeScholarshipRecord);
+      }
+    } catch (err) {
+      console.warn('Supabase getFilteredScholarships direct notice:', err.message);
+    }
+  }
+
+  // 3. Fallback to offline store if neither network source is available
+  const all = sourceRecords || getLocalStore().filter((s) => s.is_published !== false);
   let filtered = [...all];
 
   // Comprehensive multi-field search as you type
@@ -843,6 +862,10 @@ export async function createScholarship(payload) {
     }
   }
 
+  if (!createdRecord && (apiBase || isSupabaseConfigured())) {
+    throw new Error('Failed to create scholarship in the database. Please verify your backend and Supabase connection.');
+  }
+
   const record = createdRecord || {
     ...payload,
     id: payload.id || `sch_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
@@ -870,37 +893,7 @@ export async function createScholarship(payload) {
  * Update scholarship status with audit log and instant cache invalidation
  */
 export async function updateScholarshipStatus(id, newStatus, reason = '', adminEmail = 'admin@ghanascholarships.gov.gh') {
-  const timestamp = new Date().toISOString();
-
-  const historyEntry = {
-    id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-    scholarship_id: id,
-    new_status: newStatus,
-    reason: reason || 'Status updated by administrator',
-    changed_by: adminEmail,
-    created_at: timestamp,
-  };
-
-  try {
-    await supabase.from('scholarships').update({ application_status: newStatus, updated_at: timestamp }).eq('id', id);
-    await supabase.from('scholarship_status_history').insert([historyEntry]);
-  } catch (e) {
-    console.warn('Supabase status update fallback:', e.message);
-  }
-
-  const items = getLocalStore();
-  const updated = items.map((item) => {
-    if (item.id === id) {
-      historyEntry.previous_status = item.application_status;
-      return { ...item, application_status: newStatus, status: newStatus, updated_at: timestamp };
-    }
-    return item;
-  });
-  setLocalStore(updated);
-  addLocalHistory(historyEntry);
-
-  invalidateScholarshipCache();
-  return true;
+  return updateScholarship(id, { application_status: newStatus, status: newStatus });
 }
 
 /**
@@ -1012,6 +1005,10 @@ export async function updateScholarship(targetIdOrSlug, fields) {
     if (data) {
       updatedRecord = normalizeScholarshipRecord(data);
     }
+  }
+
+  if (!updatedRecord && (apiBase || isSupabaseConfigured())) {
+    throw new Error('Failed to update scholarship in the database. Please verify your backend and Supabase connection.');
   }
 
   // 4. Update Local Storage for instant offline & client persistence

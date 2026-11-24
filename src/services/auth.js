@@ -11,7 +11,7 @@
  */
 
 import { supabase, isSupabaseConfigured } from './supabase';
-import { uploadUserAvatar, deleteUserAvatar } from './storage';
+import { uploadUserAvatar, deleteUserAvatar, getApiBaseUrl } from './storage';
 import { clearUserSavedScholarships } from './savedScholarships';
 import { clearUserTrackedApplications } from './trackedApplications';
 
@@ -144,6 +144,28 @@ export function saveStoredStudentProfiles(profiles) {
   } catch (err) {
     console.error('Error saving stored student profiles:', err);
   }
+}
+
+/**
+ * Retrieve admin users from database store (or backend if available)
+ */
+export async function getAdminUsers() {
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/users`, { cache: 'no-store' });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.data?.admins)) {
+          saveStoredAdminUsers(body.data.admins);
+          return body.data.admins;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend getAdminUsers notice:', e.message);
+    }
+  }
+  return getStoredAdminUsers();
 }
 
 /**
@@ -336,6 +358,36 @@ export async function createAdminMember({ email, fullName, role = 'admin' }) {
     throw new Error('Please enter the team member\'s full legal name.');
   }
 
+  // 1. Attempt admin creation via Node.js Backend API
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/users/admin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail, fullName: fullName.trim(), role }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.success && body.data) {
+        const adminEntry = body.data.admin;
+        const admins = getStoredAdminUsers();
+        admins.unshift(adminEntry);
+        saveStoredAdminUsers(admins);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('admin-users-updated', { detail: { admin: adminEntry } }));
+        }
+        return { admin: adminEntry, tempPassword: body.data.tempPassword };
+      } else if (body.message) {
+        throw new Error(body.message);
+      }
+    } catch (apiErr) {
+      if (apiErr.message && !apiErr.message.includes('fetch') && !apiErr.message.includes('Failed to fetch')) {
+        throw apiErr;
+      }
+      console.warn('Backend createAdminMember notice:', apiErr.message);
+    }
+  }
+
   const users = getStoredUserAccounts();
   if (users.some((u) => u.email.toLowerCase() === normalizedEmail)) {
     throw new Error('An account with this email address already exists.');
@@ -408,6 +460,29 @@ export async function createAdminMember({ email, fullName, role = 'admin' }) {
 export async function changeUserPassword(userId, newPassword) {
   if (!newPassword || newPassword.length < 6) {
     throw new Error('Password must be at least 6 characters in length.');
+  }
+
+  // 1. Attempt password change via Node.js Backend API (using service role admin)
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/users/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, newPassword }),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.success) {
+        return true;
+      } else if (body.message) {
+        throw new Error(body.message);
+      }
+    } catch (apiErr) {
+      if (apiErr.message && !apiErr.message.includes('fetch') && !apiErr.message.includes('Failed to fetch')) {
+        throw apiErr;
+      }
+      console.warn('Backend changePassword notice:', apiErr.message);
+    }
   }
 
   const users = getStoredUserAccounts();
@@ -743,6 +818,21 @@ export async function logoutUser() {
  * Get all registered users for Admin Dashboard
  */
 export async function getRegisteredUsers() {
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/users`, { cache: 'no-store' });
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && Array.isArray(body.data?.students)) {
+          return body.data.students;
+        }
+      }
+    } catch (e) {
+      console.warn('Backend getRegisteredUsers notice:', e.message);
+    }
+  }
+
   if (isSupabaseConfigured()) {
     try {
       const { data, error } = await supabase

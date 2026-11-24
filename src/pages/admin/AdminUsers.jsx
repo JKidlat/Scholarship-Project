@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   getRegisteredUsers,
+  getAdminUsers,
   getStoredAdminUsers,
   createAdminMember,
   changeUserPassword,
@@ -51,9 +52,11 @@ export default function AdminUsers() {
   async function loadData() {
     setLoading(true);
     try {
-      const studentData = await getRegisteredUsers();
+      const [studentData, adminData] = await Promise.all([
+        getRegisteredUsers(),
+        getAdminUsers(),
+      ]);
       setStudents(studentData || []);
-      const adminData = getStoredAdminUsers();
       setAdmins(adminData || []);
     } catch (err) {
       console.warn('Error loading users:', err);

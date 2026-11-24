@@ -28,6 +28,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import healthRoutes from './routes/health.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import scholarshipRoutes from './routes/scholarships.routes.js';
+import userRoutes from './routes/users.routes.js';
 
 const app = express();
 
@@ -53,8 +54,9 @@ const corsOptions = {
 
     // Strip any trailing slash from incoming origin header
     const cleanOrigin = origin ? origin.replace(/\/+$/, '') : origin;
+    const isVercel = cleanOrigin && /^https:\/\/[a-z0-9_-]+\.vercel\.app$/i.test(cleanOrigin);
 
-    if (!cleanOrigin || env.allowedOrigins.includes(cleanOrigin)) {
+    if (!cleanOrigin || env.allowedOrigins.includes(cleanOrigin) || isVercel) {
       callback(null, true);
     } else {
       callback(new Error(`CORS: origin '${origin}' is not allowed`));
@@ -118,11 +120,7 @@ app.use(requestLogger);
 app.use('/api/health', healthRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/scholarships', scholarshipRoutes);
-
-// Placeholder for future route modules:
-// app.use('/api/auth',         authRoutes);
-// app.use('/api/users',        userRoutes);
-// app.use('/api/admin',        adminRoutes);
+app.use('/api/users', userRoutes);
 
 // ============================================================
 // 7. 404 handler — must come after all defined routes

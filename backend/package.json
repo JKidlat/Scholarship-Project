@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "validate": "node --check src/server.js src/app.js src/config/env.js src/config/supabase.js src/controllers/health.controller.js src/controllers/upload.controller.js src/controllers/scholarships.controller.js src/routes/health.routes.js src/routes/upload.routes.js src/routes/scholarships.routes.js src/middleware/errorHandler.js src/middleware/notFound.js src/middleware/requestLogger.js src/middleware/upload.js src/utils/AppError.js src/utils/asyncHandler.js"
+    "validate": "node --check src/server.js src/app.js src/config/env.js src/config/supabase.js src/controllers/health.controller.js src/controllers/upload.controller.js src/controllers/scholarships.controller.js src/controllers/users.controller.js src/routes/health.routes.js src/routes/upload.routes.js src/routes/scholarships.routes.js src/routes/users.routes.js src/middleware/errorHandler.js src/middleware/notFound.js src/middleware/requestLogger.js src/middleware/upload.js src/utils/AppError.js src/utils/asyncHandler.js"
   },
   "engines": {
     "node": ">=20.0.0"

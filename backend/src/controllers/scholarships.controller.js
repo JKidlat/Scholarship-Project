@@ -89,6 +89,8 @@ async function resolveInstitutionId(institutionName, category = 'public_universi
  * Retrieve paginated or filtered list of scholarships.
  */
 export const getScholarships = asyncHandler(async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
   const {
     all = 'false',
     page = 1,
@@ -111,24 +113,17 @@ export const getScholarships = asyncHandler(async (req, res) => {
       id,
       slug,
       name,
-      title,
       short_description,
-      description:full_description,
+      full_description,
       geographic_scope,
-      scope,
       funding_type,
       application_status,
-      status,
       gender_eligibility,
       verification_status,
-      is_verified,
       is_featured,
       is_published,
       application_deadline,
-      deadline,
-      deadline_text,
       application_url,
-      official_url:application_url,
       information_url,
       logo_url,
       logo_storage_path,
@@ -137,7 +132,8 @@ export const getScholarships = asyncHandler(async (req, res) => {
       created_at,
       updated_at,
       provider:scholarship_providers(id, name, logo_url),
-      institution:institutions(id, name, category)
+      institution:institutions(id, name, category),
+      study_levels:scholarship_study_levels(level)
     `,
       { count: 'exact' }
     );
@@ -175,11 +171,18 @@ export const getScholarships = asyncHandler(async (req, res) => {
     ...row,
     provider: row.provider?.name || '',
     provider_id: row.provider?.id || null,
+    provider_logo_url: row.provider?.logo_url || row.logo_url || null,
     institution: row.institution?.name || '',
     institution_id: row.institution?.id || null,
-    title: row.title || row.name || '',
-    status: row.status || row.application_status || 'open',
-    scope: row.scope || row.geographic_scope || 'local',
+    institution_category: row.institution?.category || row.institution_category_restriction || 'public_university',
+    title: row.name || row.title || '',
+    status: row.application_status || row.status || 'open',
+    scope: row.geographic_scope || row.scope || 'local',
+    deadline: row.application_deadline || row.deadline || null,
+    is_verified: row.verification_status === 'verified',
+    official_url: row.application_url || null,
+    description: row.full_description || row.short_description || '',
+    study_levels: Array.isArray(row.study_levels) ? row.study_levels.map((l) => l.level || l) : [],
   }));
 
   res.status(200).json({
@@ -450,7 +453,6 @@ export const updateScholarship = asyncHandler(async (req, res) => {
 
   if (fields.title || fields.name) {
     updatePayload.name = (fields.title || fields.name).trim();
-    updatePayload.title = (fields.title || fields.name).trim();
   }
   if (fields.slug) updatePayload.slug = fields.slug.trim().toLowerCase();
   if (providerId !== undefined) updatePayload.provider_id = providerId;
@@ -461,16 +463,13 @@ export const updateScholarship = asyncHandler(async (req, res) => {
   if (fields.institution_category) updatePayload.institution_category_restriction = fields.institution_category;
   if (fields.scope || fields.geographic_scope) {
     updatePayload.geographic_scope = fields.scope || fields.geographic_scope;
-    updatePayload.scope = fields.scope || fields.geographic_scope;
   }
   if (fields.funding_type) updatePayload.funding_type = fields.funding_type;
   if (fields.status || fields.application_status) {
     updatePayload.application_status = fields.status || fields.application_status;
-    updatePayload.status = fields.status || fields.application_status;
   }
   if (fields.gender_eligibility) updatePayload.gender_eligibility = fields.gender_eligibility;
   if (fields.is_verified !== undefined) {
-    updatePayload.is_verified = !!fields.is_verified;
     updatePayload.verification_status = fields.is_verified ? 'verified' : 'needs_verification';
   }
   if (fields.is_featured !== undefined) updatePayload.is_featured = !!fields.is_featured;
@@ -496,8 +495,9 @@ export const updateScholarship = asyncHandler(async (req, res) => {
     updatePayload.required_documents = Array.isArray(fields.required_documents) ? fields.required_documents : (fields.required_documents ? [fields.required_documents] : null);
   }
   if (fields.deadline_text !== undefined) updatePayload.deadline_text = fields.deadline_text;
-  updatePayload.application_deadline = deadline;
-  updatePayload.deadline = deadline;
+  if (deadline !== undefined) {
+    updatePayload.application_deadline = deadline;
+  }
 
   // Apply logo changes
   updatePayload.logo_url = finalLogoUrl;

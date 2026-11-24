@@ -18,6 +18,7 @@ import {
   deleteScholarship,
   archiveScholarship,
   getStatusHistory,
+  invalidateScholarshipCache,
 } from '../../services/scholarships';
 import { Button } from '../../components/common/Button';
 import { formatDate } from '../../utils/formatters';
@@ -106,6 +107,11 @@ export default function AdminScholarships() {
     }, 250);
     return () => clearTimeout(debounceTimer.current);
   }, [search]);
+
+  async function handleRefresh() {
+    invalidateScholarshipCache();
+    await loadScholarships();
+  }
 
   async function loadScholarships() {
     setLoading(true);
@@ -242,7 +248,7 @@ export default function AdminScholarships() {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={loadScholarships}
+            onClick={handleRefresh}
             className="p-2 text-slate-500 hover:text-royal hover:bg-slate-100 rounded-lg transition-colors border border-slate-200 bg-white"
             title="Refresh list"
           >
