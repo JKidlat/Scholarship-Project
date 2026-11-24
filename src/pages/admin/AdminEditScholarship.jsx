@@ -351,6 +351,7 @@ export default function AdminEditScholarship() {
           storagePath={form.logo_storage_path}
           onChange={handleLogoChange}
           providerName={form.provider || 'Provider'}
+          scholarshipId={scholarship?.id || id}
         />
 
         {/* Classification */}

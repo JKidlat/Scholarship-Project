@@ -11,6 +11,7 @@
  */
 
 import { supabase, isSupabaseConfigured } from './supabase.js';
+import { getApiBaseUrl } from './storage.js';
 import initialSeedData from '../data/scholarships_seed.json' with { type: 'json' };
 
 const STORAGE_KEY = 'ghana_scholarships_data';
@@ -659,13 +660,30 @@ export async function getScholarshipBySlug(slug) {
   const cached = getFromCache(cacheKey);
   if (cached) return cached;
 
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(slug)}`);
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && body.data) {
+          setInCache(cacheKey, body.data);
+          return body.data;
+        }
+      }
+    } catch {}
+  }
+
   if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase
-        .from('scholarships')
-        .select('*')
-        .or(`slug.eq.${slug},id.eq.${slug}`)
-        .maybeSingle();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      let query = supabase.from('scholarships').select('*');
+      if (isUuid) {
+        query = query.eq('id', slug);
+      } else {
+        query = query.eq('slug', slug);
+      }
+      const { data, error } = await query.maybeSingle();
 
       if (!error && data) {
         const normalized = normalizeScholarshipRecord(data);
@@ -696,14 +714,31 @@ export async function getScholarshipById(id) {
   const cached = getFromCache(cacheKey);
   if (cached) return cached;
 
-  // Try Supabase: match by id OR by slug
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(id)}`);
+      if (res.ok) {
+        const body = await res.json();
+        if (body.success && body.data) {
+          setInCache(cacheKey, body.data);
+          return body.data;
+        }
+      }
+    } catch {}
+  }
+
+  // Try Supabase: match by id OR by slug safely without casting errors
   if (isSupabaseConfigured()) {
     try {
-      const { data, error } = await supabase
-        .from('scholarships')
-        .select('*')
-        .or(`id.eq.${id},slug.eq.${id}`)
-        .maybeSingle();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      let query = supabase.from('scholarships').select('*');
+      if (isUuid) {
+        query = query.eq('id', id);
+      } else {
+        query = query.eq('slug', id);
+      }
+      const { data, error } = await query.maybeSingle();
 
       if (!error && data) {
         const normalized = normalizeScholarshipRecord(data);
@@ -730,25 +765,104 @@ export async function getScholarshipById(id) {
  */
 export async function createScholarship(payload) {
   const timestamp = new Date().toISOString();
-  const record = {
+  let createdRecord = null;
+
+  // 1. Attempt creation via Node.js Backend API
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/scholarships`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.success && body.data) {
+        createdRecord = body.data;
+      } else if (body.message) {
+        throw new Error(body.message);
+      }
+    } catch (apiErr) {
+      if (apiErr.message && !apiErr.message.includes('fetch') && !apiErr.message.includes('Failed to fetch')) {
+        throw apiErr;
+      }
+      console.warn('Backend create error, attempting direct Supabase insert:', apiErr.message);
+    }
+  }
+
+  // 2. Direct Supabase insert fallback
+  if (!createdRecord && isSupabaseConfigured()) {
+    const isUuid = payload.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(payload.id);
+    const dbPayload = {
+      name: (payload.title || payload.name || '').trim(),
+      title: (payload.title || payload.name || '').trim(),
+      slug: payload.slug,
+      short_description: payload.short_description || (payload.description ? payload.description.substring(0, 160) : null),
+      full_description: payload.description || payload.full_description || null,
+      geographic_scope: payload.geographic_scope || payload.scope || 'local',
+      scope: payload.geographic_scope || payload.scope || 'local',
+      funding_type: payload.funding_type || 'other',
+      application_status: payload.application_status || payload.status || 'open',
+      status: payload.application_status || payload.status || 'open',
+      gender_eligibility: payload.gender_eligibility || 'all',
+      verification_status: payload.is_verified ? 'verified' : (payload.verification_status || 'needs_verification'),
+      is_verified: !!payload.is_verified,
+      is_featured: !!payload.is_featured,
+      is_published: payload.is_published !== false,
+      application_url: payload.official_url || payload.application_url || null,
+      information_url: payload.information_url || null,
+      eligibility_requirements: Array.isArray(payload.eligibility_criteria)
+        ? payload.eligibility_criteria.join('\n')
+        : (payload.eligibility_requirements || payload.eligibility_criteria || null),
+      benefits: Array.isArray(payload.benefits) ? payload.benefits : (payload.benefits ? [payload.benefits] : null),
+      required_documents: Array.isArray(payload.required_documents) ? payload.required_documents : (payload.required_documents ? [payload.required_documents] : null),
+      logo_url: payload.logo_url || null,
+      logo_storage_path: payload.logo_storage_path || null,
+      logo_alt_text: payload.logo_alt_text || null,
+      logo_updated_at: payload.logo_url ? timestamp : null,
+      created_at: timestamp,
+      updated_at: timestamp,
+    };
+    if (isUuid) {
+      dbPayload.id = payload.id;
+    }
+    if (payload.application_deadline && /^\d{4}-\d{2}-\d{2}/.test(payload.application_deadline)) {
+      dbPayload.application_deadline = payload.application_deadline.substring(0, 10);
+      dbPayload.deadline = payload.application_deadline.substring(0, 10);
+    }
+
+    try {
+      const { data, error } = await supabase.from('scholarships').insert([dbPayload]).select().single();
+      if (!error && data) {
+        createdRecord = normalizeScholarshipRecord(data);
+      } else if (error) {
+        console.warn('Supabase direct insert warning:', error.message);
+      }
+    } catch (dbErr) {
+      console.warn('Supabase insert notice:', dbErr.message);
+    }
+  }
+
+  const record = createdRecord || {
     ...payload,
     id: payload.id || `sch_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     created_at: timestamp,
     updated_at: timestamp,
   };
 
-  try {
-    await supabase.from('scholarships').insert([record]);
-  } catch (e) {
-    console.warn('Supabase create fallback:', e.message);
-  }
-
   const items = getLocalStore();
   items.unshift(record);
   setLocalStore(items);
 
-  // Invalidate caches
+  // Invalidate caches and broadcast event
   invalidateScholarshipCache();
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('scholarship-updated', {
+        detail: { id: record.id, slug: record.slug, scholarship: record },
+      })
+    );
+  }
   return record;
 }
 
@@ -808,69 +922,86 @@ export async function updateScholarship(targetIdOrSlug, fields) {
   const canonicalId = target?.id || targetIdOrSlug;
   const canonicalSlug = target?.slug || fields.slug || targetIdOrSlug;
 
-  // 2. Prepare database-compliant Supabase payload (only matching existing columns)
-  const supabasePayload = {
-    name: fields.title || fields.name,
-    title: fields.title || fields.name,
-    institution_category: fields.institution_category || 'other',
-    geographic_scope: fields.geographic_scope || fields.scope || 'local',
-    scope: fields.geographic_scope || fields.scope || 'local',
-    funding_type: fields.funding_type || 'other',
-    gender_eligibility: fields.gender_eligibility || 'all',
-    application_status: fields.application_status || fields.status || 'open',
-    status: fields.application_status || fields.status || 'open',
-    verification_status: fields.verification_status || (fields.is_verified ? 'verified' : 'needs_verification'),
-    is_verified: !!fields.is_verified,
-    is_featured: !!fields.is_featured,
-    is_published: fields.is_published !== false,
-    application_url: fields.official_url || fields.application_url || null,
-    information_url: fields.information_url || null,
-    short_description: fields.short_description || (fields.description ? fields.description.substring(0, 160) : null),
-    full_description: fields.description || fields.full_description || null,
-    eligibility_requirements: Array.isArray(fields.eligibility_criteria)
-      ? fields.eligibility_criteria.join('\n')
-      : (fields.eligibility_requirements || fields.eligibility_criteria || null),
-    benefits: Array.isArray(fields.benefits)
-      ? fields.benefits
-      : (fields.benefits ? [fields.benefits] : null),
-    required_documents: Array.isArray(fields.required_documents)
-      ? fields.required_documents
-      : (fields.required_documents ? [fields.required_documents] : null),
-    study_levels: Array.isArray(fields.study_levels)
-      ? fields.study_levels
-      : (fields.study_levels ? fields.study_levels.split(',').map((s) => s.trim()) : ['undergraduate']),
-    fields_of_study: Array.isArray(fields.fields_of_study)
-      ? fields.fields_of_study
-      : (fields.fields_of_study ? fields.fields_of_study.split(',').map((s) => s.trim()) : ['All Fields']),
-    host_country: fields.host_country || 'Ghana',
-    deadline_text: fields.deadline_text || null,
-    logo_url: fields.logo_url || null,
-    logo_storage_path: fields.logo_storage_path || null,
-    logo_alt_text: fields.logo_alt_text || null,
-    logo_updated_at: timestamp,
-    updated_at: timestamp,
-  };
+  let updatedRecord = null;
 
-  // Safe format for DATE column: only set if valid YYYY-MM-DD
-  if (fields.application_deadline && /^\d{4}-\d{2}-\d{2}/.test(fields.application_deadline)) {
-    supabasePayload.application_deadline = fields.application_deadline.substring(0, 10);
-  } else {
-    supabasePayload.application_deadline = null;
-    if (fields.application_deadline && !supabasePayload.deadline_text) {
-      supabasePayload.deadline_text = String(fields.application_deadline);
+  // 2. Attempt update via Node.js Backend API
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      const res = await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(canonicalId || canonicalSlug)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fields),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body.success && body.data) {
+        updatedRecord = body.data;
+      } else if (body.message) {
+        throw new Error(body.message);
+      }
+    } catch (apiErr) {
+      if (apiErr.message && !apiErr.message.includes('fetch') && !apiErr.message.includes('Failed to fetch')) {
+        throw apiErr;
+      }
+      console.warn('Backend update failed, attempting direct Supabase update:', apiErr.message);
     }
   }
 
-  // 3. Update Supabase if configured
-  if (isSupabaseConfigured()) {
+  // 3. Fallback: Update Supabase directly if configured
+  if (!updatedRecord && isSupabaseConfigured()) {
+    // Only include columns that genuinely exist in Supabase scholarships table
+    const supabasePayload = {
+      name: (fields.title || fields.name || target?.title || target?.name || '').trim(),
+      title: (fields.title || fields.name || target?.title || target?.name || '').trim(),
+      geographic_scope: fields.geographic_scope || fields.scope || target?.geographic_scope || 'local',
+      scope: fields.geographic_scope || fields.scope || target?.geographic_scope || 'local',
+      funding_type: fields.funding_type || target?.funding_type || 'other',
+      gender_eligibility: fields.gender_eligibility || target?.gender_eligibility || 'all',
+      application_status: fields.application_status || fields.status || target?.application_status || 'open',
+      status: fields.application_status || fields.status || target?.application_status || 'open',
+      verification_status: fields.verification_status || (fields.is_verified ? 'verified' : 'needs_verification'),
+      is_verified: !!fields.is_verified,
+      is_featured: !!fields.is_featured,
+      is_published: fields.is_published !== false,
+      application_url: fields.official_url || fields.application_url || null,
+      information_url: fields.information_url || null,
+      short_description: fields.short_description || (fields.description ? fields.description.substring(0, 160) : null),
+      full_description: fields.description || fields.full_description || null,
+      eligibility_requirements: Array.isArray(fields.eligibility_criteria)
+        ? fields.eligibility_criteria.join('\n')
+        : (fields.eligibility_requirements || fields.eligibility_criteria || null),
+      benefits: Array.isArray(fields.benefits)
+        ? fields.benefits
+        : (fields.benefits ? [fields.benefits] : null),
+      required_documents: Array.isArray(fields.required_documents)
+        ? fields.required_documents
+        : (fields.required_documents ? [fields.required_documents] : null),
+      host_country: fields.host_country || target?.host_country || 'Ghana',
+      deadline_text: fields.deadline_text || null,
+      logo_url: fields.logo_url !== undefined ? fields.logo_url : (target?.logo_url || null),
+      logo_storage_path: fields.logo_storage_path !== undefined ? fields.logo_storage_path : (target?.logo_storage_path || null),
+      logo_alt_text: fields.logo_alt_text !== undefined ? fields.logo_alt_text : (target?.logo_alt_text || null),
+      logo_updated_at: timestamp,
+      updated_at: timestamp,
+    };
+
+    if (fields.application_deadline && /^\d{4}-\d{2}-\d{2}/.test(fields.application_deadline)) {
+      supabasePayload.application_deadline = fields.application_deadline.substring(0, 10);
+      supabasePayload.deadline = fields.application_deadline.substring(0, 10);
+    } else {
+      supabasePayload.application_deadline = null;
+      supabasePayload.deadline = null;
+      if (fields.application_deadline && !supabasePayload.deadline_text) {
+        supabasePayload.deadline_text = String(fields.application_deadline);
+      }
+    }
+
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(canonicalId);
     let query = supabase.from('scholarships').update(supabasePayload);
     if (isUuid) {
       query = query.eq('id', canonicalId);
     } else if (canonicalSlug) {
       query = query.eq('slug', canonicalSlug);
-    } else {
-      query = query.or(`id.eq.${canonicalId},slug.eq.${canonicalId}`);
     }
 
     const { data, error } = await query.select().maybeSingle();
@@ -878,13 +1009,16 @@ export async function updateScholarship(targetIdOrSlug, fields) {
       console.error('Supabase update rejected:', error);
       throw new Error(`Database error: ${error.message || 'Failed to update record in Supabase.'}`);
     }
+    if (data) {
+      updatedRecord = normalizeScholarshipRecord(data);
+    }
   }
 
   // 4. Update Local Storage for instant offline & client persistence
   const mergedRecord = {
     ...(target || {}),
     ...fields,
-    ...supabasePayload,
+    ...(updatedRecord || {}),
     id: canonicalId,
     source_id: target?.source_id,
     slug: canonicalSlug,
@@ -958,11 +1092,25 @@ export async function deleteScholarship(targetIdOrSlug) {
   // Permanently record all keys in the deleted tombstone registry
   recordDeletedKeys(keysToDelete);
 
-  // Delete from Supabase if configured
+  // 1. Delete via Backend API if available
+  const apiBase = getApiBaseUrl();
+  if (apiBase) {
+    try {
+      await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(targetItem?.slug || targetItem?.id || targetIdOrSlug)}`, {
+        method: 'DELETE',
+      });
+    } catch (apiErr) {
+      console.warn('Backend delete notice:', apiErr.message);
+    }
+  }
+
+  // 2. Delete from Supabase directly if configured
   if (isSupabaseConfigured()) {
     try {
-      const idToDelete = targetItem?.id || targetIdOrSlug;
-      await supabase.from('scholarships').delete().eq('id', idToDelete);
+      const isUuid = targetItem?.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetItem.id);
+      if (isUuid) {
+        await supabase.from('scholarships').delete().eq('id', targetItem.id);
+      }
       if (targetItem?.slug) {
         await supabase.from('scholarships').delete().eq('slug', targetItem.slug);
       }

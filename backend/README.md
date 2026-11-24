@@ -145,6 +145,13 @@ npm start
 |---|---|---|
 | GET | `/api/health` | Server liveness check |
 | GET | `/api/health/supabase` | Database connectivity check |
+| POST | `/api/upload/logo` | Upload logo to `scholarship-logos` bucket (multipart/form-data) |
+| DELETE | `/api/upload/logo` | Remove logo from storage and clear DB reference |
+| GET | `/api/scholarships` | List published scholarships (supports `?all=true`, `?status=`, `?scope=`, `?featured=`, `?query=`) |
+| GET | `/api/scholarships/:idOrSlug` | Retrieve single scholarship by UUID or unique slug |
+| POST | `/api/scholarships` | Create new scholarship in database (handles foreign keys & join tables) |
+| PATCH | `/api/scholarships/:idOrSlug` | Update scholarship (preserves logo, cleans up old file if replaced) |
+| DELETE | `/api/scholarships/:idOrSlug` | Delete scholarship and purge its logo from Storage |
 
 ---
 

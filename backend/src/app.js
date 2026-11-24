@@ -26,6 +26,8 @@ import { requestLogger } from './middleware/requestLogger.js';
 import { notFound } from './middleware/notFound.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import healthRoutes from './routes/health.routes.js';
+import uploadRoutes from './routes/upload.routes.js';
+import scholarshipRoutes from './routes/scholarships.routes.js';
 
 const app = express();
 
@@ -114,9 +116,10 @@ app.use(requestLogger);
 // 6. API routes
 // ============================================================
 app.use('/api/health', healthRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/scholarships', scholarshipRoutes);
 
 // Placeholder for future route modules:
-// app.use('/api/scholarships', scholarshipRoutes);
 // app.use('/api/auth',         authRoutes);
 // app.use('/api/users',        userRoutes);
 // app.use('/api/admin',        adminRoutes);

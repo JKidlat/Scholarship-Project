@@ -27,6 +27,7 @@ export function LogoUploadField({
   storagePath,
   onChange,
   providerName = 'Provider',
+  scholarshipId = null,
 }) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
@@ -47,14 +48,14 @@ export function LogoUploadField({
     setUploading(true);
 
     try {
-      const result = await uploadScholarshipLogo(file, storagePath);
+      const result = await uploadScholarshipLogo(file, storagePath, scholarshipId, providerName);
       onChange({
         logo_url: result.url,
         logo_storage_path: result.storagePath,
         logo_alt_text: `${providerName} official logo`,
       });
-      setSuccessMsg('Logo uploaded and ready to save!');
-      setTimeout(() => setSuccessMsg(null), 3000);
+      setSuccessMsg('Logo uploaded to Supabase Storage successfully!');
+      setTimeout(() => setSuccessMsg(null), 4000);
     } catch (err) {
       setError(err.message || 'Failed to upload logo image.');
     } finally {
@@ -90,7 +91,7 @@ export function LogoUploadField({
   async function handleRemove() {
     if (window.confirm('Remove this scholarship logo? The default initials placeholder will be displayed.')) {
       if (storagePath) {
-        deleteScholarshipLogo(storagePath).catch(() => {});
+        deleteScholarshipLogo(storagePath, scholarshipId).catch(() => {});
       }
       onChange({
         logo_url: null,
