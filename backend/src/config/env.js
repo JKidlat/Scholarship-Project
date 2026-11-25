@@ -23,6 +23,10 @@ const __dirname = path.dirname(__filename);
 // Load .env from the backend root directory
 config({ path: path.resolve(__dirname, '../../.env') });
 
+// Map common Supabase environment variable aliases
+process.env.SUPABASE_URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+process.env.SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
 // ============================================================
 // Schema: validate and coerce every required environment variable
 // ============================================================
