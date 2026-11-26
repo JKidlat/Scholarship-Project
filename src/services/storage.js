@@ -104,6 +104,8 @@ export async function uploadScholarshipLogo(
 
   const apiBase = getApiBaseUrl();
 
+  let lastError = null;
+
   // 1. Primary Strategy: Upload via Node.js backend
   if (apiBase) {
     try {
@@ -132,6 +134,7 @@ export async function uploadScholarshipLogo(
         throw new Error(`Backend upload failed: ${resData.message}`);
       }
     } catch (apiErr) {
+      lastError = apiErr;
       // If error was explicitly thrown above, rethrow
       if (apiErr.message && apiErr.message.startsWith('Backend upload failed:')) {
         throw apiErr;
@@ -180,13 +183,14 @@ export async function uploadScholarshipLogo(
         throw new Error(`Supabase Storage rejected upload: ${error.message}`);
       }
     } catch (supaErr) {
+      lastError = supaErr;
       throw new Error(`Direct storage upload failed: ${supaErr.message}`);
     }
   }
 
-  // 3. Neither path succeeded — do NOT fake success with base64!
+  // 3. Neither path succeeded
   throw new Error(
-    'Unable to upload logo: The backend server is unreachable and direct Supabase Storage is not configured. Please ensure your backend is running or Supabase environment variables are set.'
+    lastError ? lastError.message : 'Unable to upload logo: Please ensure the backend is running or Supabase environment variables are configured.'
   );
 }
 
