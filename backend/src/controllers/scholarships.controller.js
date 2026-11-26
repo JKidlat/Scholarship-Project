@@ -129,6 +129,11 @@ export const getScholarships = asyncHandler(async (req, res) => {
       logo_storage_path,
       logo_alt_text,
       logo_updated_at,
+      host_country,
+      target_countries,
+      eligibility_requirements,
+      benefits,
+      required_documents,
       created_at,
       updated_at,
       provider:scholarship_providers(id, name, logo_url),
@@ -183,6 +188,11 @@ export const getScholarships = asyncHandler(async (req, res) => {
     official_url: row.application_url || null,
     description: row.full_description || row.short_description || '',
     study_levels: Array.isArray(row.study_levels) ? row.study_levels.map((l) => l.level || l) : [],
+    host_country: row.host_country || 'Ghana',
+    target_countries: Array.isArray(row.target_countries) ? row.target_countries : ['Ghana'],
+    eligibility_requirements: row.eligibility_requirements || '',
+    benefits: Array.isArray(row.benefits) ? row.benefits : (row.benefits ? [row.benefits] : []),
+    required_documents: Array.isArray(row.required_documents) ? row.required_documents : (row.required_documents ? [row.required_documents] : []),
   }));
 
   res.status(200).json({
@@ -327,6 +337,9 @@ export const createScholarship = asyncHandler(async (req, res) => {
       : (body.eligibility_requirements || body.eligibility_criteria || null),
     benefits: Array.isArray(body.benefits) ? body.benefits : (body.benefits ? [body.benefits] : null),
     required_documents: Array.isArray(body.required_documents) ? body.required_documents : (body.required_documents ? [body.required_documents] : null),
+    application_process: Array.isArray(body.application_process) ? body.application_process : (body.application_process ? [body.application_process] : null),
+    host_country: body.host_country || 'Ghana',
+    target_countries: Array.isArray(body.target_countries) ? body.target_countries : ['Ghana'],
     logo_url: body.logo_url || null,
     logo_storage_path: body.logo_storage_path || null,
     logo_alt_text: body.logo_alt_text || `${providerName} official logo`,
@@ -488,11 +501,22 @@ export const updateScholarship = asyncHandler(async (req, res) => {
       ? fields.eligibility_criteria.join('\n')
       : (fields.eligibility_requirements || fields.eligibility_criteria || null);
   }
+  if (fields.host_country !== undefined) {
+    updatePayload.host_country = fields.host_country || 'Ghana';
+  }
+  if (fields.target_countries !== undefined) {
+    updatePayload.target_countries = Array.isArray(fields.target_countries)
+      ? fields.target_countries
+      : [fields.target_countries || 'Ghana'];
+  }
   if (fields.benefits !== undefined) {
     updatePayload.benefits = Array.isArray(fields.benefits) ? fields.benefits : (fields.benefits ? [fields.benefits] : null);
   }
   if (fields.required_documents !== undefined) {
     updatePayload.required_documents = Array.isArray(fields.required_documents) ? fields.required_documents : (fields.required_documents ? [fields.required_documents] : null);
+  }
+  if (fields.application_process !== undefined) {
+    updatePayload.application_process = Array.isArray(fields.application_process) ? fields.application_process : (fields.application_process ? [fields.application_process] : null);
   }
   if (fields.deadline_text !== undefined) updatePayload.deadline_text = fields.deadline_text;
   if (deadline !== undefined) {

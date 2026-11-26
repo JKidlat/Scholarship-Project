@@ -142,12 +142,13 @@ export default function ScholarshipDetailPage() {
     let isMounted = true;
 
     async function loadData() {
+      // Always show loading spinner if no initialData or to fetch latest live data
       if (!initialData) {
         setLoading(true);
       }
 
       try {
-        const data = await getScholarshipBySlug(slug);
+        const data = await getScholarshipBySlug(slug, true);
         if (data && isMounted) {
           setScholarship(data);
           setLoading(false);

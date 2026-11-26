@@ -66,6 +66,12 @@ export const CARD_SELECT_FIELDS = [
   'logo_alt_text',
   'created_at',
   'updated_at',
+  'host_country',
+  'target_countries',
+  'eligibility_requirements',
+  'benefits',
+  'required_documents',
+  'application_process',
   'provider:scholarship_providers(id, name, logo_url)',
   'institution:institutions(id, name, category)',
   'study_levels:scholarship_study_levels(level)',
@@ -672,17 +678,19 @@ export async function getFilteredScholarships({
 /**
  * Fetch single scholarship by slug or ID with instant caching
  */
-export async function getScholarshipBySlug(slug) {
+export async function getScholarshipBySlug(slug, forceLive = false) {
   if (!slug) return null;
 
   const cacheKey = `slug_${slug}`;
-  const cached = getFromCache(cacheKey);
-  if (cached) return cached;
+  if (!forceLive) {
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+  }
 
   const apiBase = getApiBaseUrl();
   if (apiBase) {
     try {
-      const res = await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(slug)}`);
+      const res = await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(slug)}`, { cache: 'no-store' });
       if (res.ok) {
         const body = await res.json();
         if (body.success && body.data) {
@@ -726,17 +734,19 @@ export async function getScholarshipBySlug(slug) {
  * Fetch a single scholarship by ID or slug — used by Admin Edit page.
  * Safely handles both UUID and string IDs (e.g. sch_gh001, INT001).
  */
-export async function getScholarshipById(id) {
+export async function getScholarshipById(id, forceLive = true) {
   if (!id) return null;
 
   const cacheKey = `scholarship_id_${id}`;
-  const cached = getFromCache(cacheKey);
-  if (cached) return cached;
+  if (!forceLive) {
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
+  }
 
   const apiBase = getApiBaseUrl();
   if (apiBase) {
     try {
-      const res = await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(id)}`);
+      const res = await fetch(`${apiBase}/api/scholarships/${encodeURIComponent(id)}`, { cache: 'no-store' });
       if (res.ok) {
         const body = await res.json();
         if (body.success && body.data) {
